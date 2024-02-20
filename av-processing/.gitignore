@@ -1,0 +1,23 @@
+# Dirs
+
+*trash*
+*Trash*
+*RECYCLE*
+System*
+
+# A/V formats
+
+*.mov
+*.MOV
+*.MTS
+*.mp4
+*.wav
+*.mp3
+*.aup3
+
+# Other file formats
+
+*.pdf
+*.PDF
+*.JPG
+*.jpg

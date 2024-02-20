@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "2023-electra-field-marcschoolstudy"
+version = "0.1.0"
+description = ""
+authors = ["Marc Fraile <marc.fraile.fabrega@gmail.com>"]
+readme = "README.md"
+packages = [{include = "local"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.25.2"
+pandas = "^2.1.0"
+tqdm = "^4.66.1"
+imageio = {extras = ["pyav"], version = "^2.31.2"}
+Pillow = "^10.0.0"
+mff-pretty-cli = "^0.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

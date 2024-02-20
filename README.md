@@ -5,5 +5,6 @@ This repository contains code for the article *"UpDySt: the Uppsala Dyadic Story
 It is organized as a "monorepo": each top-level directory is a separate codebase used for the research project.
 
 * [storytelling-app/](storytelling-app/) contains the storytelling board game used in the study. It is implemented as a static webpage, using basic web technologies (HTML, CSS, JavaScript).
-* [feature-analysis/](feature-analysis/) contains code related to extracting summary statistics from the frame-by-frame features, and training Machine Learning models to predict the experimental condition (high-rapport pairs vs. low-rapport pairs).
 * [network-analysis/](network-analysis/) contains code related to analysing and partitioning the friendship network we obtained from asking participants to nominate their best friends. It also contains code related to the statistical analysis of questionnaire responses.
+* [av-processing/](av-processing/) contains code for processing the original pair-level recordings into synchronized round-level recordings.
+* [feature-analysis/](feature-analysis/) contains code related to extracting summary statistics from the frame-by-frame features, and training Machine Learning models to predict the experimental condition (high-rapport pairs vs. low-rapport pairs).
