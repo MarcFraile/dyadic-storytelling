@@ -1,0 +1,115 @@
+@font-face {
+    font-family: 'Riffic';
+    src: url('RifficFree-Bold.ttf');
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Riffic', Arial, Helvetica, sans-serif;
+    color:rgb(39, 13, 10);
+    background-color: rgb(201, 190, 185);
+}
+
+body, header {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 0;
+}
+
+h2 {
+    margin-bottom: 0;
+}
+
+main {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    margin: 2rem;
+    grid-gap: 2rem;
+    justify-items: center;
+    align-items: center;
+}
+
+.card-container {
+    width: calc(7 * min(calc(82vw / (7 * 4)), calc(82vh / (5 * 3))));
+    height: calc(5 * min(calc(82vw / (7 * 4)), calc(82vh / (5 * 3))));
+}
+
+.card {
+    position: relative;
+    width:  100%;
+    height: 100%;
+    color: transparent;
+    box-shadow: 2px 4px 8px black;
+    border-radius: 8px;
+    transform-style: preserve-3d;
+    transform-origin: center;
+    transition: transform 1s;
+}
+
+.card.is-flipped {
+    transform: rotateY(-180deg);
+}
+
+.card-face {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.face-down {
+    background-color: rgb(65, 38, 48);
+}
+
+.face-down:hover {
+    background-color: rgb(94, 57, 79);
+    box-shadow: 2px 4px 12px black;
+}
+
+.face-down:active {
+    background-color: rgb(107, 60, 88);
+    box-shadow: 2px 4px 2px black;
+}
+
+.face-up {
+    background-color: white;
+    transform: rotateY(180deg);
+}
+
+button {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    background-color: rgb(212, 179, 211);
+    border: 0;
+    box-shadow: 1px 2px 6px black;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: rgb(240, 213, 243);
+    box-shadow: 1px 2px 8px black;
+}
+
+button:active {
+    background-color: rgb(244, 214, 255);
+    box-shadow: 1px 2px 2px black;
+}
+
+.hidden {
+    display: none;
+}
