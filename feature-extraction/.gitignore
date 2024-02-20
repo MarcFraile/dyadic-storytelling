@@ -1,0 +1,21 @@
+# Python
+
+.venv
+__pycache__
+.mypy_cache
+
+# Recordings and artifacts
+
+*.mp4
+*.mp3
+*.csv
+*.zip
+
+# Temp dirs created by the scripts
+
+processed
+tmp_json
+
+# Other
+
+!child-order.csv
