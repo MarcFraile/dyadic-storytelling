@@ -265,8 +265,9 @@ def main():
 
     # ---- One boxplot per SAM item, showing the overall distribution. ---- #
 
-    sns.boxplot(melted_sam, x="variable", y="value", hue="moment") # , legend=False)
+    sns.boxplot(melted_sam, x="variable", y="value", hue="moment", palette="pastel", medianprops={"color": "r", "linewidth": 2.5}, legend=False)
     # plt.title("SAM Questionnaires")
+    plt.xlabel("")
     plt.tight_layout()
 
     path = PLOT_DIR / "questionnaire_descriptive_stats_sam.png"
@@ -280,7 +281,7 @@ def main():
 
         # --- Boxplot per moment (pre-post test) and condition (positive or negative pair). ---- #
 
-        sns.boxplot(sam.reset_index(), x="moment", y=variable, hue="condition") # , legend=False)
+        sns.boxplot(sam.reset_index(), x="moment", y=variable, hue="condition", palette="pastel", medianprops={"color": "r", "linewidth": 2.5}, legend=False)
         plt.ylim((0.75, 5.25))
         # plt.title(f"SAM {variable.title()}")
         plt.tight_layout()
@@ -376,7 +377,7 @@ def main():
         if p < 0.05:
             significant.append((x1, x2, p))
 
-    ax = sns.boxplot(ios, order=IOS_CUTE_VARS) # , legend=False)
+    ax = sns.boxplot(ios, order=IOS_CUTE_VARS, palette="pastel", medianprops={"color": "r", "linewidth": 2.5})
     add_significance(ax, significant)
     # plt.title("IOS Questionnaire Answers (overall)")
     plt.tight_layout()
@@ -432,7 +433,7 @@ def main():
 
     ios_long = ios.reset_index().melt(id_vars=["child_id", "condition"], value_vars=["Best Friend", "Bad Guy", "Partner"])
 
-    ax = sns.boxplot(ios_long, x="variable", y="value", hue="condition", order=IOS_CUTE_VARS) # , legend=False)
+    ax = sns.boxplot(ios_long, x="variable", y="value", hue="condition", order=IOS_CUTE_VARS, palette="pastel", medianprops={"color": "r", "linewidth": 2.5}, legend=False)
     ax.set(xlabel=None)
     add_significance(ax, significant)
     # plt.title("IOS Questionnaire Answers (per-condition)")
@@ -446,10 +447,11 @@ def main():
     # ---- Partner boxplot ---- #
 
     ios_long_partner = ios.reset_index().melt(id_vars=["child_id", "condition"], value_vars=["Partner"])
+    ios_long_partner["condition"].replace({"positive": "high-rapport", "negative": "low-rapport"}, inplace=True)
 
-    ax = sns.boxplot(ios_long_partner, x="variable", y="value", hue="condition", order=IOS_CUTE_VARS) # , legend=False)
+    ax = sns.boxplot(ios_long_partner, x="condition", y="value", palette="pastel", medianprops={"color": "r", "linewidth": 2.5}, legend=False)
     ax.set(xlabel=None)
-    add_significance(ax, [(0.75, 1.25, ios_condition.loc["Partner", "p-val"])])
+    add_significance(ax, [(0, 1, ios_condition.loc["Partner", "p-val"])])
     # plt.title("IOS::Partner Questionnaire Answers (per-condition)")
     plt.tight_layout()
 
