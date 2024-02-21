@@ -19,3 +19,4 @@ tmp_json
 # Other
 
 !child-order.csv
+!pairs-with-distances.csv
