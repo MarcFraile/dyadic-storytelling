@@ -61,7 +61,13 @@ def main() -> None:
         pairs_per_source[source] = sorted(set(PAIR_REGEX.search(file.stem).group(0) for file in files))
 
         for in_file in tqdm(files):
-            out_file = out_dir / in_file.name.replace("consolidated-", "").replace("cam", "camera").replace("skeleton", "pose")
+            out_name = (in_file.name
+                .replace("consolidated-", "")
+                .replace("cam", "camera")
+                .replace("skeleton", "pose")
+                .replace("planning", "round")
+            )
+            out_file = out_dir / out_name
             shutil.copy2(in_file, out_file)
 
     cli.chapter("Compiling Metadata")
@@ -83,10 +89,10 @@ def main() -> None:
     ]).set_index("pair_id")
 
     cli.print(pair_info)
-    pair_info.to_csv(PACKED_DIR / "pair_info.csv")
+    pair_info.to_csv(PACKED_DIR / "pair-info.csv")
 
     cli.chapter("Packing")
-    cli.print("This will take a long time...")
+    cli.print("This will take a few minutes...")
 
     tic = datetime.now()
     shutil.make_archive(PACKED_DIR, "zip", PACKED_DIR)
