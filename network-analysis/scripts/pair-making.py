@@ -1,10 +1,11 @@
 #!/bin/env -S python3 -u
 
 
-from typing import Literal, Set, Tuple
-from pathlib import Path
+import subprocess
 import json
+from pathlib import Path
 from datetime import datetime
+from typing import Literal, Set, Tuple
 
 import numpy as np
 import pandas as pd
@@ -150,24 +151,40 @@ def main():
                 edge_color.append("gray")
                 edge_type.add(("one-way", "gray"))
 
+        class ArrowHandler(mpl.legend_handler.HandlerPatch):
+            def create_artists(self, legend, orig_handle, xdescent, ydescent, width, height, fontsize, trans):
+                (r,g,b,a) = orig_handle.get_edgecolor()
+                if r > 0:
+                    return [orig_handle]
+                else:
+                    copy = mpl.patches.FancyArrow(14, 3, -12, 0, width=0.75, length_includes_head=True, head_width=3.5, color="black")
+                    return [orig_handle, copy]
+
         edge_type = sorted(edge_type)
-        edge_elements = [ mpl.lines.Line2D([0], [0], color=color) for (name, color) in edge_type ]
+        edge_elements = [ mpl.patches.FancyArrow(5, 3, 14, 0, width=0.75, length_includes_head=True, head_width=3.5, color=color) for (name, color) in edge_type ]
         edge_type = [ name for (name, color) in edge_type ]
 
         legend_labels = [ *classes_in_graph, *edge_type ]
         legend_elements = [ *clazz_legend_elements, *edge_elements ]
 
         nx.draw_networkx(directed_graph, node_color=node_color, edge_color=edge_color, pos=directed_graph_layout(directed_graph))
-        # plt.title(f"Grade {grade} directed graph")
-        plt.legend(labels=legend_labels, handles=legend_elements)
+        plt.legend(labels=legend_labels, handles=legend_elements, handler_map={mpl.patches.FancyArrow: ArrowHandler()})
         ax.axis("off")
         ax.set_aspect("equal")
         fig.tight_layout()
 
-        path = PLOT_DIR / f"grade_{grade}_directed_graph.png"
-        fig.savefig(path)
+        og_path = PLOT_DIR / f"grade_{grade}_directed_graph.png"
+        trimmed_path = PLOT_DIR / f"year_{grade}_nominations.png"
+
+        fig.savefig(og_path)
         plt.close()
-        cli.print(f"Saved visualization at {path}")
+        cli.print(f"Saved visualization at {og_path}")
+
+        result = subprocess.run([ "magick", "convert", og_path, "-trim", trimmed_path ])
+        if result.returncode == 0:
+            cli.print(f"Saved trimmed version at {trimmed_path}")
+        else:
+            cli.print("Failed to trim!")
 
         # ================================================================ #
         cli.section("Calculate Symmetric Distances")
