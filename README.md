@@ -1,6 +1,6 @@
-# UpDySt: the Uppsala Dyadic Storytelling dataset
+# UpStory: the Uppsala Storytelling dataset
 
-This repository contains code for the article *"UpDySt: the Uppsala Dyadic Storytelling dataset"* by Marc Fraile, Natalia Calvo-Barajas, Anastasia Akkuzu, Giovanna Varni, Joakim Lindblad, Nataša Sladoje and Ginevra Castellano.
+This repository contains code for the article *"UpStory: the Uppsala Storytelling dataset"* by Marc Fraile, Natalia Calvo-Barajas, Anastasia Sophia Apeiron, Giovanna Varni, Joakim Lindblad, Nataša Sladoje and Ginevra Castellano.
 
 It is organized as a "monorepo": each top-level directory is a separate codebase used for the research project.
 
