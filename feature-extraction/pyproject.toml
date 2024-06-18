@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "2023-electra-field-marcschoolstudy"
+name = "2023-electra-field-feature-extraction"
 version = "0.1.0"
 description = ""
 authors = ["Marc Fraile <marc.fraile.fabrega@gmail.com>"]

@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "network-analysis-classroom"
+name = "2023-electra-field-network-analysis"
 version = "0.1.0"
-description = "Friendship network analysis: minimal and maximal matchings."
+description = ""
 authors = ["Marc Fraile <marc.fraile.fabrega@gmail.com>"]
 readme = "README.md"
 packages = [{include = "local"}]
