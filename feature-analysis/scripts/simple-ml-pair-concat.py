@@ -47,6 +47,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 import sklearn.base
 from sklearn import model_selection
@@ -161,14 +162,14 @@ cli = PrettyCli()
 
 @dataclass
 class TrainValSplit:
-    train_indices: np.ndarray
-    val_indices: np.ndarray
+    train_pairs: list[str]
+    val_pairs: list[str]
 
 
 @dataclass
 class TestSplit:
-    test_indices: np.ndarray
-    train_val_joint_indices: np.ndarray
+    test_pairs: list[str]
+    train_val_joint_pairs: list[str]
     train_val_splits: list[TrainValSplit]
 
 
@@ -197,28 +198,15 @@ def get_sklearn_grid(grid: Grid) -> Grid:
 
 
 def get_splits(data: pd.DataFrame) -> list[TestSplit]:
-    """
-    Returns a list of `TestSplit` entries used for nested leave-one-out cross-validation.
-
-    Each `TestSplit` gives a list of sample indices to be used for testing, and a list of `TrainValSplit` entries.
-    Each `TrainVal` split gives a list of training indices, and a list of validation indices.
-
-    Leave-one-out is done by choosing a child to exclude, and excluding any entries corresponding to a session the child participated in.
-    This means some entries corresponding to other children (who palyed with the out-child) are also excluded.
-    """
-
     index = data.index.to_frame().reset_index(drop=True)
     children = data.index.get_level_values("child_id").unique()
+    all_pairs = set(data.index.get_level_values("pair_id"))
 
     test_splits = []
 
     for test_child in children:
 
-        test_sessions = set(index.loc[index["child_id"] == test_child, "pair_id"])
-        test_mask = index["pair_id"].isin(test_sessions)
-
-        test_indices = index[test_mask].index.to_numpy()
-        train_val_joint_indices = index[~test_mask].index.to_numpy()
+        test_pairs = set(index.loc[index["child_id"] == test_child, "pair_id"])
 
         train_val_splits = []
 
@@ -226,23 +214,20 @@ def get_splits(data: pd.DataFrame) -> list[TestSplit]:
             if val_child == test_child:
                 continue
 
-            val_sessions = set(index.loc[index["child_id"] == val_child, "pair_id"])
-            val_sessions = val_sessions - test_sessions
-            val_mask = index["pair_id"].isin(val_sessions)
-            val_indices = index[val_mask].index.to_numpy()
+            val_pairs = set(index.loc[index["child_id"] == val_child, "pair_id"])
+            val_pairs = val_pairs - test_pairs
 
-            train_mask = ~(test_mask | val_mask)
-            train_indices = index[train_mask].index.to_numpy()
+            train_sessions = all_pairs - test_pairs - val_pairs
 
-            train_val_splits.append(TrainValSplit(train_indices, val_indices))
+            train_val_splits.append(TrainValSplit(train_pairs=train_sessions, val_pairs=val_pairs))
 
-        test_splits.append(TestSplit(test_indices, train_val_joint_indices, train_val_splits))
+        test_splits.append(TestSplit(test_pairs=test_pairs, train_val_joint_pairs=(all_pairs - test_pairs), train_val_splits=train_val_splits))
 
     return test_splits
 
 
 def main() -> None:
-    cli.main_title("SIMPLE ML - NEW EDITION")
+    cli.main_title("SIMPLE ML - PAIR CONCATENATION")
 
     assert OUT.is_dir()
 
@@ -258,7 +243,8 @@ def main() -> None:
         feature_file = FEATURE_FILES[source]
         assert feature_file.is_file()
 
-        all_features = pd.read_csv(feature_file, index_col=["pair_id", "round", "child_id"])
+        all_features = pd.read_csv(feature_file, index_col=["pair_id", "round", "child_id"]).sort_index()
+
         splits = get_splits(all_features)
 
         detailed_runs = pd.DataFrame()
@@ -267,8 +253,21 @@ def main() -> None:
         for (feature_set, model_name) in itertools.product(FEATURE_COMBINATIONS, MODELS):
             cli.subchapter(f"Features: {feature_set}; Model: {model_name}")
 
-            features = all_features[feature_set].to_numpy()
-            labels = (all_features["condition"] == "positive").astype(int).to_numpy()
+            # Stack features from both children in the same video.
+            features = all_features[feature_set].reset_index()
+            features["child_id"] = features.reset_index().groupby(["pair_id", "round"]).cumcount()
+            features = features.set_index(["pair_id", "round", "child_id"])
+            features = features.unstack(level="child_id")
+
+            labels = features.index.get_level_values("pair_id").str.startswith("P").astype(int)
+
+            cli.section("Features")
+            cli.print(features)
+
+            cli.section("Labels")
+            cli.print(labels)
+
+            # features = features.to_numpy()
 
             base_model = MODELS[model_name]["estimator"]
             param_grid = MODELS[model_name]["grid"]
@@ -285,14 +284,20 @@ def main() -> None:
             best_params = { param: [] for param in param_names }
             test_conf = [] # Confusion matrices
 
-            for split in splits:
-                X_test = features[split.test_indices]
-                Y_test = labels[split.test_indices]
+            for split in tqdm(splits, desc="split"):
 
-                X_tv = features[split.train_val_joint_indices]
-                Y_tv = labels[split.train_val_joint_indices]
+                def get_indices(pairs: list[str]) -> np.ndarray:
+                    return features.index.get_level_values("pair_id").isin(pairs)
 
-                cv = [ (tvs.train_indices, tvs.val_indices) for tvs in split.train_val_splits ]
+                test_indices = get_indices(split.test_pairs)
+                X_test = features.to_numpy()[test_indices]
+                Y_test = labels[test_indices]
+
+                train_val_joint_indices = get_indices(split.train_val_joint_pairs)
+                X_tv = features[train_val_joint_indices]
+                Y_tv = labels[train_val_joint_indices]
+
+                cv = [ (get_indices(tvs.train_pairs), get_indices(tvs.val_pairs)) for tvs in split.train_val_splits ]
                 param_grid_sklearn = get_sklearn_grid(param_grid)
                 search_results = model_selection.GridSearchCV(estimator=pipeline, param_grid=param_grid_sklearn, cv=cv, scoring=SCORES, refit=MAIN_SCORE)
 
@@ -355,11 +360,11 @@ def main() -> None:
 
         cli.subchapter("Detailed Runs")
         cli.print(detailed_runs)
-        detailed_runs.to_csv(OUT / f"{source}-simple-ml-data-detailed-runs.csv")
+        detailed_runs.to_csv(OUT / f"{source}-simple-ml-pair-concat-detailed-runs.csv")
 
         cli.subchapter("Run Summary")
         cli.print(run_summary)
-        run_summary.to_csv(OUT / f"{source}-simple-ml-data-run-summary.csv")
+        run_summary.to_csv(OUT / f"{source}-simple-ml-pair-concat-run-summary.csv")
 
 
 if __name__ == "__main__":
