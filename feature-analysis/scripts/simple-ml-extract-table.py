@@ -18,6 +18,16 @@ ACCURACY_BASELINE = 54 / 103
 FEATURE_FILES : list[Path] = { source: OUT / f"{source}-summary-au-data.csv" for source in SOURCES }
 
 
+def get_test_acc_display(source_data: pd.DataFrame) -> pd.Series:
+    test_acc = source_data.groupby(["features", "model"])["test_accuracy"]
+
+    test_acc_mean    = (100 * test_acc.mean()).map("{:,.2f}\%".format)
+    test_acc_std     = (100 * test_acc.std() ).map("{:,.2f}\%".format)
+    test_acc_display = "$" + test_acc_mean + " \pm " + test_acc_std + "$"
+
+    return test_acc_display
+
+
 def main() -> None:
     cli = PrettyCli()
     cli.main_title("SIMPLE ML - EXTRACT TABLE")
@@ -39,9 +49,17 @@ def main() -> None:
             for src in SOURCES
         }
 
-        left_accs  = source_data["left-cam" ]["test_accuracy"].rename("left_camera").map(lambda x: round(100*x, 2))
-        right_accs = source_data["right-cam"]["test_accuracy"].rename("right_camera").map(lambda x: round(100*x, 2))
-        test_accs = pd.concat([left_accs, right_accs], axis=1).reset_index()
+        source_detailed = {
+            src: pd.read_csv(
+                OUT / f"{src}-simple-ml-{'data' if type == 'single-child' else 'pair-concat'}-detailed-runs.csv",
+                index_col=["model", "features"],
+            )
+            for src in SOURCES
+        }
+
+        left_accs  = get_test_acc_display(source_detailed["left-cam" ]).rename("left_camera")
+        right_accs = get_test_acc_display(source_detailed["right-cam"]).rename("right_camera")
+        test_accs  = pd.concat([left_accs, right_accs], axis=1).reset_index()
 
         test_accs["AUs"] = test_accs["features"].map(lambda features: sorted(set(re.findall("AU\d{2}", features))))
         test_accs["statistic"] = test_accs["features"].map(lambda features: sorted(set(re.findall("mean|std|q95", features))))
