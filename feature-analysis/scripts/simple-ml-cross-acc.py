@@ -42,7 +42,7 @@ def load_source(type: str, source: str) -> tuple[float, pd.DataFrame]:
     ml_results = pd.read_csv(results_csv)
     ml_results["feature_type"] = ml_results["features"].map(lambda s: "presence" if ("presence" in s) else "intensity")
     ml_results = ml_results.sort_values([ "feature_type", "model" ])
-    ml_results = ml_results[[ "feature_type", "model", "features", "test_accuracy" ]]
+    ml_results = ml_results[[ "feature_type", "model", "features", "test_accuracy_mean", "test_accuracy_std" ]]
     ml_results = ml_results.set_index(["model", "features"])
 
     return random_chance, ml_results
@@ -65,11 +65,11 @@ def main() -> None:
             random_x, ml_x = load_source(type, sx)
             random_y, ml_y = load_source(type, sy)
 
-            ml_x = ml_x.rename({ "test_accuracy": "acc_x"}, axis=1)
-            ml_y = ml_y.rename({ "test_accuracy": "acc_y"}, axis=1)
+            ml_x = ml_x.rename(columns={ "test_accuracy_mean": "x_mean", "test_accuracy_std": "x_std" })
+            ml_y = ml_y.rename(columns={ "test_accuracy_mean": "y_mean", "test_accuracy_std": "y_std" })
 
             ml = ml_x.join(ml_y.drop("feature_type", axis=1))
-            ml["acc_min"] = np.minimum(ml["acc_x"], ml["acc_y"])
+            ml["acc_min"] = np.minimum(ml["x_mean"], ml["y_mean"])
 
             ml = (
                 ml.reset_index()
@@ -84,12 +84,13 @@ def main() -> None:
 
             fig, ax = plt.subplots(dpi=300, figsize=(8,8))
 
-            sns.scatterplot(data=ml, x="acc_x", y="acc_y", hue="model", style="feature type", legend="brief")
+            sns.scatterplot(data=ml, x="x_mean", y="y_mean", hue="model", style="feature type", legend="brief")
+            # sns.rugplot(data=ml, x="x_mean", y="y_mean", hue="model", legend="brief")
 
-            x0 = min(random_x, ml["acc_x"].min())
-            y0 = min(random_y, ml["acc_y"].min())
-            x1 = max(random_x, ml["acc_x"].max())
-            y1 = max(random_y, ml["acc_y"].max())
+            x0 = min(random_x, ml["x_mean"].min())
+            y0 = min(random_y, ml["y_mean"].min())
+            x1 = max(random_x, ml["x_mean"].max())
+            y1 = max(random_y, ml["y_mean"].max())
 
             plt.plot([random_x, random_x], [y0, y1], "--", color="gray")
             plt.plot([x0, x1], [random_y, random_y], "--", color="gray")
@@ -104,7 +105,6 @@ def main() -> None:
             sx_fancy = " ".join(sx.split("-")).replace("cam", "camera")
             sy_fancy = " ".join(sy.split("-")).replace("cam", "camera")
 
-            # plt.title(f"{sx_fancy} Test Accuracy vs. {sy_fancy} Test Accuracy")
             plt.xlabel(sx_fancy)
             plt.ylabel(sy_fancy)
 
