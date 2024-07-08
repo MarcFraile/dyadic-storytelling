@@ -164,6 +164,33 @@ test = ["hypothesis (>=6.46.1)", "pytest (>=7.3.2)", "pytest-xdist (>=2.2.0)"]
 xml = ["lxml (>=4.9.2)"]
 
 [[package]]
+name = "pandas-flavor"
+version = "0.6.0"
+description = "The easy way to write your own Pandas flavor."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pandas = ">=0.23"
+xarray = "*"
+
+[[package]]
+name = "patsy"
+version = "0.5.6"
+description = "A Python package for describing statistical models and for building design matrices."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+numpy = ">=1.4"
+six = "*"
+
+[package.extras]
+test = ["pytest", "pytest-cov", "scipy"]
+
+[[package]]
 name = "pillow"
 version = "10.3.0"
 description = "Python Imaging Library (Fork)"
@@ -178,6 +205,25 @@ mic = ["olefile"]
 tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
 typing = ["typing-extensions"]
 xmp = ["defusedxml"]
+
+[[package]]
+name = "pingouin"
+version = "0.5.4"
+description = "Pingouin: statistical package for Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+matplotlib = "*"
+numpy = "*"
+pandas = ">=1.5"
+pandas-flavor = "*"
+scikit-learn = "*"
+scipy = "*"
+seaborn = "*"
+statsmodels = "*"
+tabulate = "*"
 
 [[package]]
 name = "pyparsing"
@@ -275,6 +321,37 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
+name = "statsmodels"
+version = "0.14.2"
+description = "Statistical computations and models for Python"
+category = "main"
+optional = false
+python-versions = ">=3.9"
+
+[package.dependencies]
+numpy = ">=1.22.3"
+packaging = ">=21.3"
+pandas = ">=1.4,<2.1.0 || >2.1.0"
+patsy = ">=0.5.6"
+scipy = ">=1.8,<1.9.2 || >1.9.2"
+
+[package.extras]
+build = ["cython (>=0.29.33)"]
+develop = ["colorama", "cython (>=0.29.33)", "cython (>=3.0.10,<4)", "flake8", "isort", "joblib", "matplotlib (>=3)", "pytest (>=7.3.0,<8)", "pytest-cov", "pytest-randomly", "pytest-xdist", "pywinpty", "setuptools-scm[toml] (>=8.0,<9.0)"]
+docs = ["ipykernel", "jupyter-client", "matplotlib", "nbconvert", "nbformat", "numpydoc", "pandas-datareader", "sphinx"]
+
+[[package]]
+name = "tabulate"
+version = "0.9.0"
+description = "Pretty-print tabular data"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+widechars = ["wcwidth"]
+
+[[package]]
 name = "threadpoolctl"
 version = "3.5.0"
 description = "threadpoolctl"
@@ -307,10 +384,31 @@ category = "main"
 optional = false
 python-versions = ">=2"
 
+[[package]]
+name = "xarray"
+version = "2024.6.0"
+description = "N-D labeled arrays and datasets in Python"
+category = "main"
+optional = false
+python-versions = ">=3.9"
+
+[package.dependencies]
+numpy = ">=1.23"
+packaging = ">=23.1"
+pandas = ">=2.0"
+
+[package.extras]
+accel = ["bottleneck", "flox", "numbagg", "opt-einsum", "scipy"]
+complete = ["xarray[accel,dev,io,parallel,viz]"]
+dev = ["hypothesis", "mypy", "pre-commit", "pytest", "pytest-cov", "pytest-env", "pytest-timeout", "pytest-xdist", "ruff", "xarray[complete]"]
+io = ["cftime", "fsspec", "h5netcdf", "netCDF4", "pooch", "pydap", "scipy", "zarr"]
+parallel = ["dask[complete]"]
+viz = ["matplotlib", "nc-time-axis", "seaborn"]
+
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "b02f84833a706fce418ed4155b1f89087ac0c2d13f9d2a6ec4f97474bc36827f"
+content-hash = "a82af3d88fabbfb90cb33f2fb251c3d72f1eca4b0ed63ec007aad571870083ab"
 
 [metadata.files]
 colorama = [
@@ -629,6 +727,14 @@ pandas = [
     {file = "pandas-2.2.2-cp39-cp39-win_amd64.whl", hash = "sha256:640cef9aa381b60e296db324337a554aeeb883ead99dc8f6c18e81a93942f5f4"},
     {file = "pandas-2.2.2.tar.gz", hash = "sha256:9e79019aba43cb4fda9e4d983f8e88ca0373adbb697ae9c6c43093218de28b54"},
 ]
+pandas-flavor = [
+    {file = "pandas_flavor-0.6.0-py3-none-any.whl", hash = "sha256:a32c9e2e0da702579320cf2bd0078cee91807713bc9c65ff522f6b0289899893"},
+    {file = "pandas_flavor-0.6.0.tar.gz", hash = "sha256:9fb8735102dcb65dae7ee5cda12b393ca134a909ebcfc0262c5cdc1d79ba007f"},
+]
+patsy = [
+    {file = "patsy-0.5.6-py2.py3-none-any.whl", hash = "sha256:19056886fd8fa71863fa32f0eb090267f21fb74be00f19f5c70b2e9d76c883c6"},
+    {file = "patsy-0.5.6.tar.gz", hash = "sha256:95c6d47a7222535f84bff7f63d7303f2e297747a598db89cf5c67f0c0c7d2cdb"},
+]
 pillow = [
     {file = "pillow-10.3.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:90b9e29824800e90c84e4022dd5cc16eb2d9605ee13f05d47641eb183cd73d45"},
     {file = "pillow-10.3.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:a2c405445c79c3f5a124573a051062300936b0281fee57637e706453e452746c"},
@@ -700,6 +806,10 @@ pillow = [
     {file = "pillow-10.3.0-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:a0eaa93d054751ee9964afa21c06247779b90440ca41d184aeb5d410f20ff591"},
     {file = "pillow-10.3.0.tar.gz", hash = "sha256:9d2455fbf44c914840c793e89aa82d0e1763a14253a000743719ae5946814b2d"},
 ]
+pingouin = [
+    {file = "pingouin-0.5.4-py2.py3-none-any.whl", hash = "sha256:c3b1fdd2794b0f1b1d96a0fdc5d6d7207ead51b04083ae6c1f302e9ca4c7e408"},
+    {file = "pingouin-0.5.4.tar.gz", hash = "sha256:dd25ed2ab1ceb2f6b4dbc7d85c52df50b9cf661782fd792a30a7f51d0c025a07"},
+]
 pyparsing = [
     {file = "pyparsing-3.1.2-py3-none-any.whl", hash = "sha256:f9db75911801ed778fe61bb643079ff86601aca99fcae6345aa67292038fb742"},
     {file = "pyparsing-3.1.2.tar.gz", hash = "sha256:a1bac0ce561155ecc3ed78ca94d3c9378656ad4c94c1270de543f621420f94ad"},
@@ -770,6 +880,36 @@ six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
+statsmodels = [
+    {file = "statsmodels-0.14.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:df5d6f95c46f0341da6c79ee7617e025bf2b371e190a8e60af1ae9cabbdb7a97"},
+    {file = "statsmodels-0.14.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:a87ef21fadb445b650f327340dde703f13aec1540f3d497afb66324499dea97a"},
+    {file = "statsmodels-0.14.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5827a12e3ede2b98a784476d61d6bec43011fedb64aa815f2098e0573bece257"},
+    {file = "statsmodels-0.14.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:10f2b7611a61adb7d596a6d239abdf1a4d5492b931b00d5ed23d32844d40e48e"},
+    {file = "statsmodels-0.14.2-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:c254c66142f1167b4c7d031cf8db55294cc62ff3280e090fc45bd10a7f5fd029"},
+    {file = "statsmodels-0.14.2-cp310-cp310-win_amd64.whl", hash = "sha256:0e46e9d59293c1af4cc1f4e5248f17e7e7bc596bfce44d327c789ac27f09111b"},
+    {file = "statsmodels-0.14.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:50fcb633987779e795142f51ba49fb27648d46e8a1382b32ebe8e503aaabaa9e"},
+    {file = "statsmodels-0.14.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:876794068abfaeed41df71b7887000031ecf44fbfa6b50d53ccb12ebb4ab747a"},
+    {file = "statsmodels-0.14.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7a91f6c4943de13e3ce2e20ee3b5d26d02bd42300616a421becd53756f5deb37"},
+    {file = "statsmodels-0.14.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4864a1c4615c5ea5f2e3b078a75bdedc90dd9da210a37e0738e064b419eccee2"},
+    {file = "statsmodels-0.14.2-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:afbd92410e0df06f3d8c4e7c0e2e71f63f4969531f280fb66059e2ecdb6e0415"},
+    {file = "statsmodels-0.14.2-cp311-cp311-win_amd64.whl", hash = "sha256:8e004cfad0e46ce73fe3f3812010c746f0d4cfd48e307b45c14e9e360f3d2510"},
+    {file = "statsmodels-0.14.2-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:eb0ba1ad3627705f5ae20af6b2982f500546d43892543b36c7bca3e2f87105e7"},
+    {file = "statsmodels-0.14.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:90fd2f0110b73fc3fa5a2f21c3ca99b0e22285cccf38e56b5b8fd8ce28791b0f"},
+    {file = "statsmodels-0.14.2-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ac780ad9ff552773798829a0b9c46820b0faa10e6454891f5e49a845123758ab"},
+    {file = "statsmodels-0.14.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:55d1742778400ae67acb04b50a2c7f5804182f8a874bd09ca397d69ed159a751"},
+    {file = "statsmodels-0.14.2-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:f870d14a587ea58a3b596aa994c2ed889cc051f9e450e887d2c83656fc6a64bf"},
+    {file = "statsmodels-0.14.2-cp312-cp312-win_amd64.whl", hash = "sha256:f450fcbae214aae66bd9d2b9af48e0f8ba1cb0e8596c6ebb34e6e3f0fec6542c"},
+    {file = "statsmodels-0.14.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:201c3d00929c4a67cda1fe05b098c8dcf1b1eeefa88e80a8f963a844801ed59f"},
+    {file = "statsmodels-0.14.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:9edefa4ce08e40bc1d67d2f79bc686ee5e238e801312b5a029ee7786448c389a"},
+    {file = "statsmodels-0.14.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:29c78a7601fdae1aa32104c5ebff2e0b72c26f33e870e2f94ab1bcfd927ece9b"},
+    {file = "statsmodels-0.14.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f36494df7c03d63168fccee5038a62f469469ed6a4dd6eaeb9338abedcd0d5f5"},
+    {file = "statsmodels-0.14.2-cp39-cp39-win_amd64.whl", hash = "sha256:8875823bdd41806dc853333cc4e1b7ef9481bad2380a999e66ea42382cf2178d"},
+    {file = "statsmodels-0.14.2.tar.gz", hash = "sha256:890550147ad3a81cda24f0ba1a5c4021adc1601080bd00e191ae7cd6feecd6ad"},
+]
+tabulate = [
+    {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
+    {file = "tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c"},
+]
 threadpoolctl = [
     {file = "threadpoolctl-3.5.0-py3-none-any.whl", hash = "sha256:56c1e26c150397e58c4926da8eeee87533b1e32bef131bd4bf6a2f45f3185467"},
     {file = "threadpoolctl-3.5.0.tar.gz", hash = "sha256:082433502dd922bf738de0d8bcc4fdcbf0979ff44c42bd40f5af8a282f6fa107"},
@@ -781,4 +921,8 @@ tqdm = [
 tzdata = [
     {file = "tzdata-2024.1-py2.py3-none-any.whl", hash = "sha256:9068bc196136463f5245e51efda838afa15aaeca9903f49050dfa2679db4d252"},
     {file = "tzdata-2024.1.tar.gz", hash = "sha256:2674120f8d891909751c38abcdfd386ac0a5a1127954fbc332af6b5ceae07efd"},
+]
+xarray = [
+    {file = "xarray-2024.6.0-py3-none-any.whl", hash = "sha256:721a7394e8ec3d592b2d8ebe21eed074ac077dc1bb1bd777ce00e41700b4866c"},
+    {file = "xarray-2024.6.0.tar.gz", hash = "sha256:0b91e0bc4dc0296947947640fe31ec6e867ce258d2f7cbc10bedf4a6d68340c7"},
 ]
