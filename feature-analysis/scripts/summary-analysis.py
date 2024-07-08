@@ -23,7 +23,9 @@ cli = PrettyCli()
 
 
 def main() -> None:
+    cli.big_divisor()
     cli.main_title("SUMMARY ANALYSIS")
+    cli.big_divisor()
 
     assert DATA_ROOT.is_dir()
     assert OUT.is_dir()
@@ -32,17 +34,19 @@ def main() -> None:
         PLOT_DIR.mkdir(parents=False, exist_ok=False)
 
     for source in SOURCES:
-        cli.chapter(source)
+        cli.main_title(source)
 
         cli.section("Loading Data")
 
         au_file = OUT / f"{source}-summary-au-data.csv"
         assert au_file.is_file()
         au_data = pd.read_csv(au_file, index_col=["pair_id", "round", "child_id"])
+        au_data.drop(index="P240", inplace=True)
 
         duration_file = DATA_ROOT / f"{source}-durations.csv"
         assert duration_file.is_file()
         duration_data = pd.read_csv(duration_file, index_col=["pair_id", "round"])
+        duration_data.drop(index="P240", inplace=True)
 
         cli.print("OK")
 
@@ -72,7 +76,11 @@ def main() -> None:
                     "Pairs": len(duration_neg.index.get_level_values("pair_id").unique()),
                     "Rounds": len(duration_neg),
                 },
-            }
+                "Total": {
+                    "Pairs": len(duration_data.index.get_level_values("pair_id").unique()),
+                    "Rounds": len(duration_data),
+                },
+            },
         })
 
         # -------------------------------- #
@@ -93,6 +101,11 @@ def main() -> None:
                     "Mean"  : timedelta(seconds=duration_neg["duration_s"].mean().item()),
                     "STD"   : timedelta(seconds=duration_neg["duration_s"].std().item()),
                     "Total" : timedelta(seconds=duration_neg["duration_s"].sum().item()),
+                },
+                "Total" : {
+                    "Mean"  : timedelta(seconds=duration_data["duration_s"].mean().item()),
+                    "STD"   : timedelta(seconds=duration_data["duration_s"].std().item()),
+                    "Total" : timedelta(seconds=duration_data["duration_s"].sum().item()),
                 },
             },
             "T-Test": {
