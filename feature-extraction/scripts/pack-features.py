@@ -57,7 +57,7 @@ def main() -> None:
         out_dir = PACKED_DIR / source.replace("cam", "camera")
         out_dir.mkdir(parents=False, exist_ok=False)
 
-        files = [ file for file in in_dir.iterdir() if file.is_file() and (file.suffix == ".csv") and ("consolidated-" in file.stem) ]
+        files = [ file for file in in_dir.iterdir() if file.is_file() and (file.suffix == ".csv") and ("consolidated-" in file.stem) and ("P240" not in file.stem) ]
         pairs_per_source[source] = sorted(set(PAIR_REGEX.search(file.stem).group(0) for file in files))
 
         for in_file in tqdm(files):
