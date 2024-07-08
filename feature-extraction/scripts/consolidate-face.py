@@ -80,15 +80,6 @@ def get_face_facepos(face_data: pd.DataFrame, frame: int, face_id: int) -> pose.
     return pose.Keypoint(x, y, confidence)
 
 
-# def maybe_face_facepos(face_data: pd.DataFrame, frame: int, face_id: int) -> pose.Keypoint:
-#     if (frame, face_id) in face_data.index:
-#         # In the case of the face, we already filtered out unsuccessful registrations,
-#         # so we can skip the confidence check.
-#         return get_face_facepos(face_data, frame, face_id)
-#     else:
-#         return None
-
-
 def get_error(skeleton_anchor: pose.Keypoint, face_anchor: pose.Keypoint, uncertainty_weight: float) -> float:
     distance = np.sqrt((skeleton_anchor.x - face_anchor.x) ** 2 + (skeleton_anchor.y - face_anchor.y) ** 2)
     uncertainty = 1 - face_anchor.confidence
@@ -144,8 +135,6 @@ def match_faces(
                 skelly_id, skelly_anchor = skeleton_anchors[skelly_idx]
                 face_id, face_anchor = face_anchors[face_idx]
                 output[skelly_id] = face_id
-
-    # TODO: Do we need any more processing?
 
     return output
 
@@ -231,9 +220,9 @@ def main() -> None:
                 skeleton_file = face_file.with_stem(face_file.stem.replace("face-data", "consolidated-skeleton"))
                 video_file = face_file.with_name(face_file.name.replace("-face-data.csv", ".mp4"))
 
-                assert face_file.is_file()
-                assert skeleton_file.is_file()
-                assert video_file.is_file()
+                assert face_file.is_file()    , f"face_file not found: {face_file}"
+                assert skeleton_file.is_file(), f"skeleton_file not found: {skeleton_file}"
+                assert video_file.is_file()   , f"video_file not found: {video_file}"
 
                 face_data     = pd.read_csv(face_file    , index_col=["frame", "face_id"])
                 skeleton_data = pd.read_csv(skeleton_file, index_col=["frame", "child_id", "joint"])

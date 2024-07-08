@@ -54,7 +54,8 @@ def move_if_exists(in_dir: Path, out_dir: Path, item: str, settings: Settings) -
     out_path = out_dir / item
 
     if in_path.exists():
-        cli.print(f"Moving '{item}'")
+        verb = "Copying" if settings.copy else "Moving"
+        cli.print(f"{verb} '{item}'")
         move_or_copy(src=in_path, dst=out_path, settings=settings)
 
 

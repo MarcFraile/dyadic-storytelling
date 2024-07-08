@@ -107,7 +107,7 @@ def main() -> None:
     for video_dir in util.VIDEO_DIRS:
         assert video_dir.is_dir(), f"Video dir not found: {video_dir}"
 
-    assert CHILD_ORDER_CSV.is_file()
+    assert CHILD_ORDER_CSV.is_file(), f"Child order CSV not found: {CHILD_ORDER_CSV}"
 
     if FAILED_VIDEOS_CSV.exists():
         FAILED_VIDEOS_CSV.unlink()
