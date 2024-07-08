@@ -15,7 +15,7 @@ K_FOLDS_JSON = OUT / "k_folds.json"
 TYPES = [ "single-child", "pair-concat" ]
 SOURCES = [ "left-cam", "right-cam" ]
 
-ACCURACY_BASELINE = 54 / 103
+ACCURACY_BASELINE = 57 / 106
 
 FEATURE_FILES : list[Path] = { source: OUT / f"{source}-summary-au-data.csv" for source in SOURCES }
 
@@ -73,9 +73,15 @@ def main() -> None:
 
         joint_data["model"] = joint_data["model"].map({ "DecisionTreeClassifier": "decision tree", "LogisticRegression": "linear", "SVC": "SVM" })
 
-        cli.section("Data")
-
-        cli.print(joint_data)
+        cli.section("Generalization Gap")
+        gap_lr = (
+            (joint_data["test_acc_mean_left"] - joint_data["test_acc_mean_right"])
+            .abs()
+            .describe(percentiles=[])
+            .drop(["count", "50%"])
+            .map(lambda x: round(100 * x, 2))
+        )
+        cli.print(gap_lr)
 
         cli.subchapter("left cam")
 
@@ -88,18 +94,30 @@ def main() -> None:
             }
         })
 
-        cli.section("Top Results")
+        # =========================
+
+        cli.section("Top Model")
+
         left_best = (joint_data
             .sort_values(
                 by        = [ "test_acc_mean_left", "test_acc_std_left", "test_acc_mean_right", "test_acc_std_right" ],
                 ascending = [                False,                True,                 False,                 True ],
             )
             .head(10)
+        )
+
+        top_left = left_best.iloc[0][["train_acc_mean_left", "train_acc_std_left", "test_acc_mean_left", "test_acc_std_left"]]
+        top_left = top_left.map(lambda x: f"{100*x:5.02f}%")
+        cli.print(top_left)
+
+        cli.section("Top 10 -- Latex Dislpay")
+
+        left_best_display = (left_best
             [[ "model", "AUs", "statistic", "type", "display_left", "display_right" ]]
             .rename(columns=lambda col: col.replace("display", "camera"))
             .reset_index(drop=True)
         )
-        cli.print(left_best)
+        cli.print(left_best_display)
 
         cli.subchapter("right cam")
 
@@ -112,18 +130,30 @@ def main() -> None:
             }
         })
 
-        cli.section("Top Results")
+        # =========================
+
+        cli.section("Top Model")
+
         right_best = (joint_data
             .sort_values(
                 by        = [ "test_acc_mean_right", "test_acc_std_right", "test_acc_mean_left", "test_acc_std_left" ],
                 ascending = [                 False,                 True,                False,                True ],
             )
             .head(10)
+        )
+
+        top_right = right_best.iloc[0][["train_acc_mean_right", "train_acc_std_right", "test_acc_mean_right", "test_acc_std_right"]]
+        top_right = top_right.map(lambda x: f"{100*x:5.02f}%")
+        cli.print(top_right)
+
+        cli.section("Top 10 -- Latex Dislpay")
+
+        right_best_display = (right_best
             [[ "model", "AUs", "statistic", "type", "display_left", "display_right" ]]
             .rename(columns=lambda col: col.replace("display", "camera"))
             .reset_index(drop=True)
         )
-        cli.print(right_best)
+        cli.print(right_best_display)
 
 
 if __name__ == "__main__":
