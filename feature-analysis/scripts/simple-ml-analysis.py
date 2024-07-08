@@ -59,12 +59,12 @@ def main() -> None:
             cli.section("Plot Stats")
             sns.set_theme()
             fig, ax = plt.subplots(dpi=200, figsize=(8,6))
-            sns.scatterplot(data=ml, x="train_accuracy", y="test_accuracy", hue="model", style="feature_type", legend="brief")
+            sns.scatterplot(data=ml, x="train_accuracy_mean", y="test_accuracy_mean", hue="model", style="feature_type", legend="brief")
 
-            x0 = min(random_chance, ml["train_accuracy"].min())
-            y0 = min(random_chance, ml["test_accuracy" ].min())
-            x1 = max(random_chance, ml["train_accuracy"].max())
-            y1 = max(random_chance, ml["test_accuracy" ].max())
+            x0 = min(random_chance, ml["train_accuracy_mean"].min())
+            y0 = min(random_chance, ml["test_accuracy_mean" ].min())
+            x1 = max(random_chance, ml["train_accuracy_mean"].max())
+            y1 = max(random_chance, ml["test_accuracy_mean" ].max())
 
             plt.plot([random_chance, random_chance], [y0, y1], "--", color="gray")
             plt.plot([x0, x1], [random_chance, random_chance], "--", color="gray")
