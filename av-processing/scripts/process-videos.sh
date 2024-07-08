@@ -378,16 +378,16 @@ ffmpeg -hide_banner -y -i "Classified/frontal-cam/frontal-cam-P240.mp4" -ss 00:0
 # Left cam
 ffmpeg -hide_banner -y -i "Classified/left-cam/left-cam-P241.MTS" -ss 00:00:46 -to 00:01:26 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/left-cam/left-cam-P241-planning-1.mp4"
 ffmpeg -hide_banner -y -i "Classified/left-cam/left-cam-P241.MTS" -ss 00:03:16 -to 00:03:53 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/left-cam/left-cam-P241-planning-2.mp4"
-# Round 3: There's a break 05:33 - 06:02 because they already wanted to present. What to do?
-ffmpeg -hide_banner -y -i "Classified/left-cam/left-cam-P241.MTS" -ss 00:05:14 -to 00:06:24 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/left-cam/left-cam-P241-planning-3.mp4"
-# Round 4: [Child 26] hiding in the floor to troll me... What to do?
-ffmpeg -hide_banner -y -i "Classified/left-cam/left-cam-P241.MTS" -ss 00:07:20 -to 00:09:26 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/left-cam/left-cam-P241-planning-4.mp4"
+ffmpeg -hide_banner -y -i "Classified/left-cam/left-cam-P241.MTS" -ss 00:05:14 -to 00:05:33 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/left-cam/left-cam-P241-planning-3.mp4"
+ffmpeg -hide_banner -y -i "Classified/left-cam/left-cam-P241.MTS" -ss 00:06:02 -to 00:06:24 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/left-cam/left-cam-P241-planning-4.mp4"
+ffmpeg -hide_banner -y -i "Classified/left-cam/left-cam-P241.MTS" -ss 00:07:20 -to 00:09:26 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/left-cam/left-cam-P241-planning-5.mp4"
 
 # Right cam
 ffmpeg -hide_banner -y -i "Classified/right-cam/right-cam-P241.MTS" -ss 00:00:51 -to 00:01:31 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/right-cam/right-cam-P241-planning-1.mp4"
 ffmpeg -hide_banner -y -i "Classified/right-cam/right-cam-P241.MTS" -ss 00:03:21 -to 00:03:58 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/right-cam/right-cam-P241-planning-2.mp4"
-ffmpeg -hide_banner -y -i "Classified/right-cam/right-cam-P241.MTS" -ss 00:05:19 -to 00:06:29 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/right-cam/right-cam-P241-planning-3.mp4"
-ffmpeg -hide_banner -y -i "Classified/right-cam/right-cam-P241.MTS" -ss 00:07:25 -to 00:09:31 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/right-cam/right-cam-P241-planning-4.mp4"
+ffmpeg -hide_banner -y -i "Classified/right-cam/right-cam-P241.MTS" -ss 00:05:19 -to 00:05:38 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/right-cam/right-cam-P241-planning-3.mp4"
+ffmpeg -hide_banner -y -i "Classified/right-cam/right-cam-P241.MTS" -ss 00:06:07 -to 00:06:29 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/right-cam/right-cam-P241-planning-4.mp4"
+ffmpeg -hide_banner -y -i "Classified/right-cam/right-cam-P241.MTS" -ss 00:07:25 -to 00:09:31 -c:v libx264 -c:a aac -vf scale=1920:1080,yadif -preset slow -crf 20 "Clean/right-cam/right-cam-P241-planning-5.mp4"
 
 # Frontal cam
 # MISSING DATA!
