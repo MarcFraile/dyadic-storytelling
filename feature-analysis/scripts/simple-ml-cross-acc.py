@@ -82,9 +82,9 @@ def main() -> None:
             cli.print(ml_sorted)
             ml_sorted.to_csv(OUT / f"{type}-{sx}-vs-{sy}-simple-ml-test-acc.csv")
 
-            fig, ax = plt.subplots(dpi=300, figsize=(8,8))
+            fig, ax = plt.subplots(dpi=300, figsize=(6.5,6.5))
 
-            sns.scatterplot(data=ml, x="x_mean", y="y_mean", hue="model", style="feature type", legend="brief")
+            sns.scatterplot(data=ml, x="x_mean", y="y_mean", hue="model", style="feature type", legend="brief", s=50)
             # sns.rugplot(data=ml, x="x_mean", y="y_mean", hue="model", legend="brief")
 
             x0 = min(random_x, ml["x_mean"].min())
@@ -102,8 +102,8 @@ def main() -> None:
             ax.set_xticklabels(f"{100*x:.0f}%" for x in ax.get_xticks())
             ax.set_yticklabels(f"{100*y:.0f}%" for y in ax.get_yticks())
 
-            sx_fancy = " ".join(sx.split("-")).replace("cam", "camera")
-            sy_fancy = " ".join(sy.split("-")).replace("cam", "camera")
+            sx_fancy = " ".join(sx.split("-")).replace("cam", "camera") + " accuracy"
+            sy_fancy = " ".join(sy.split("-")).replace("cam", "camera") + " accuracy"
 
             plt.xlabel(sx_fancy)
             plt.ylabel(sy_fancy)

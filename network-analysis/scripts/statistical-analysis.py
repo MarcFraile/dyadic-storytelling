@@ -13,6 +13,7 @@ from pandas.api.types import CategoricalDtype
 import pingouin as pg
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import seaborn as sns
 
 from pretty_cli import PrettyCli
@@ -265,9 +266,11 @@ def main():
 
     # ---- One boxplot per SAM item, showing the overall distribution. ---- #
 
-    sns.boxplot(melted_sam, x="variable", y="value", hue="moment", palette="pastel", medianprops={"color": "r", "linewidth": 2.5}, legend=False)
+    ax = sns.boxplot(melted_sam, x="variable", y="value", hue="moment", palette="pastel", medianprops={"color": "r", "linewidth": 2.5}, legend=False)
     # plt.title("SAM Questionnaires")
     plt.xlabel("")
+    plt.ylabel("SAM score")
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
 
     path = PLOT_DIR / "questionnaire_descriptive_stats_sam.png"
@@ -284,6 +287,7 @@ def main():
         sns.boxplot(sam.reset_index(), x="moment", y=variable, hue="condition", palette="pastel", medianprops={"color": "r", "linewidth": 2.5}, legend=False)
         plt.ylim((0.75, 5.25))
         # plt.title(f"SAM {variable.title()}")
+        plt.ylabel("SAM score")
         plt.tight_layout()
 
         path = PLOT_DIR / f"questionnaire_descriptive_stats_sam_{variable}.png"
@@ -380,6 +384,7 @@ def main():
     ax = sns.boxplot(ios, order=IOS_CUTE_VARS, palette="pastel", medianprops={"color": "r", "linewidth": 2.5})
     add_significance(ax, significant)
     # plt.title("IOS Questionnaire Answers (overall)")
+    plt.ylabel("IOS score")
     plt.tight_layout()
 
     path = PLOT_DIR / "questionnaire_descriptive_stats_ios.png"
@@ -437,6 +442,7 @@ def main():
     ax.set(xlabel=None)
     add_significance(ax, significant)
     # plt.title("IOS Questionnaire Answers (per-condition)")
+    plt.ylabel("IOS score")
     plt.tight_layout()
 
     path = PLOT_DIR / "questionnaire_descriptive_stats_ios_condition.png"
@@ -453,6 +459,7 @@ def main():
     ax.set(xlabel=None)
     add_significance(ax, [(0, 1, ios_condition.loc["Partner", "p-val"])])
     # plt.title("IOS::Partner Questionnaire Answers (per-condition)")
+    plt.ylabel("IOS score")
     plt.tight_layout()
 
     path = PLOT_DIR / "questionnaire_descriptive_stats_ios_partner_condition.png"
