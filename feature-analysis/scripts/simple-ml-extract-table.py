@@ -20,6 +20,12 @@ ACCURACY_BASELINE = 57 / 106
 FEATURE_FILES : list[Path] = { source: OUT / f"{source}-summary-au-data.csv" for source in SOURCES }
 
 
+def add_display(data: pd.DataFrame, old_col_prefix: str, new_col: str) -> None:
+    mean = (100 * data[old_col_prefix + "_mean"]).map("{:5.02f}\%".format)
+    std  = (100 * data[old_col_prefix + "_std" ]).map("{:5.02f}\%".format)
+    data[new_col] = "$" + mean + " \pm " + std + "$"
+
+
 def main() -> None:
     cli = PrettyCli()
     cli.main_title("SIMPLE ML - EXTRACT TABLE")
@@ -51,15 +57,15 @@ def main() -> None:
         for src in SOURCES:
             data = pd.read_csv(
                 OUT / f"{src}-simple-ml-{'data' if type == 'single-child' else 'pair-concat'}-run-summary.csv",
-                usecols   = [ "model", "features", "train_accuracy_mean", "train_accuracy_std", "test_accuracy_mean", "test_accuracy_std" ],
+                usecols   = [ "model", "features", "train_accuracy_mean", "train_accuracy_std", "best_mean_val_accuracy_mean", "best_mean_val_accuracy_std", "test_accuracy_mean", "test_accuracy_std" ],
                 index_col = [ "model", "features" ],
             )
 
             data.rename(columns=lambda col: col.replace("accuracy", "acc"), inplace=True)
 
-            test_acc_mean = (100 * data["test_acc_mean"]).map("{:5.02f}\%".format)
-            test_acc_std  = (100 * data["test_acc_std" ]).map("{:5.02f}\%".format)
-            data["display"] = "$" + test_acc_mean + " \pm " + test_acc_std + "$"
+            add_display(data, old_col_prefix="train_acc", new_col="train_display")
+            add_display(data, old_col_prefix="best_mean_val_acc", new_col="val_display")
+            add_display(data, old_col_prefix="test_acc", new_col="test_display")
 
             source_data[src] = data
 
@@ -83,77 +89,79 @@ def main() -> None:
         )
         cli.print(gap_lr)
 
-        cli.subchapter("left cam")
+        for side in ["left", "right"]:
+            other = "left" if side == "right" else "right"
 
-        cli.section("Stats")
-        data = source_data["left-cam"]
-        cli.print({
-            "Beat Random": {
-                "Train": f"{(data['train_acc_mean'] > ACCURACY_BASELINE).sum()} / {len(data)}",
-                "Test" : f"{(data['test_acc_mean' ] > ACCURACY_BASELINE).sum()} / {len(data)}",
-            }
-        })
+            # ================================================== #
+            cli.subchapter(f"{side} cam")
 
-        # =========================
+            # ---------------- #
+            cli.section("Stats")
+            data = source_data[f"{side}-cam"]
+            cli.print({
+                "Beat Random": {
+                    "Train": f"{(data['train_acc_mean'] > ACCURACY_BASELINE).sum()} / {len(data)}",
+                    "Test" : f"{(data['test_acc_mean' ] > ACCURACY_BASELINE).sum()} / {len(data)}",
+                }
+            })
 
-        cli.section("Top Model")
 
-        left_best = (joint_data
-            .sort_values(
-                by        = [ "test_acc_mean_left", "test_acc_std_left", "test_acc_mean_right", "test_acc_std_right" ],
-                ascending = [                False,                True,                 False,                 True ],
+            # ---------------- #
+            cli.section("Top Model")
+
+            best = joint_data.sort_values(
+                by        = [ f"test_acc_mean_{side}", f"test_acc_std_{side}", f"test_acc_mean_{other}", f"test_acc_std_{other}" ],
+                ascending = [                   False,                   True,                    False,                    True ],
             )
-            .head(10)
-        )
 
-        top_left = left_best.iloc[0][["train_acc_mean_left", "train_acc_std_left", "test_acc_mean_left", "test_acc_std_left"]]
-        top_left = top_left.map(lambda x: f"{100*x:5.02f}%")
-        cli.print(top_left)
+            top = best.iloc[0][[f"train_acc_mean_{side}", f"train_acc_std_{side}", f"test_acc_mean_{side}", f"test_acc_std_{side}"]]
+            top = top.map(lambda x: f"{100*x:5.02f}%")
+            cli.print(top)
 
-        cli.section("Top 10 -- Latex Dislpay")
+            # ---------------- #
+            cli.section("Top 10 -- Latex Dislpay")
+            cli.print(f"Sorted by (test mean {side}, test std {side}, test mean {other}, test std {other}).")
+            cli.blank()
 
-        left_best_display = (left_best
-            [[ "model", "AUs", "statistic", "type", "display_left", "display_right" ]]
-            .rename(columns=lambda col: col.replace("display", "camera"))
-            .reset_index(drop=True)
-        )
-        cli.print(left_best_display)
-
-        cli.subchapter("right cam")
-
-        cli.section("Stats")
-        data = source_data["right-cam"]
-        cli.print({
-            "Beat Random": {
-                "Train": f"{(data['train_acc_mean'] > ACCURACY_BASELINE).sum()} / {len(data)}",
-                "Test" : f"{(data['test_acc_mean' ] > ACCURACY_BASELINE).sum()} / {len(data)}",
-            }
-        })
-
-        # =========================
-
-        cli.section("Top Model")
-
-        right_best = (joint_data
-            .sort_values(
-                by        = [ "test_acc_mean_right", "test_acc_std_right", "test_acc_mean_left", "test_acc_std_left" ],
-                ascending = [                 False,                 True,                False,                True ],
+            top10_latex = (best
+                [[ "model", "AUs", "statistic", "type", f"test_display_{side}", f"test_display_{other}" ]]
+                .rename(columns=lambda col: col.replace("test_display", "camera"))
+                .head(10)
+                .reset_index(drop=True)
             )
-            .head(10)
-        )
+            cli.print(top10_latex)
 
-        top_right = right_best.iloc[0][["train_acc_mean_right", "train_acc_std_right", "test_acc_mean_right", "test_acc_std_right"]]
-        top_right = top_right.map(lambda x: f"{100*x:5.02f}%")
-        cli.print(top_right)
+            # ---------------- #
+            cli.section("Top 10 -- Test Single Source")
+            cli.print(f"Sorted by (test mean {side}, val mean {side}, train mean {side}, test std {side}, val std {side}, train std {side}).")
+            cli.blank()
 
-        cli.section("Top 10 -- Latex Dislpay")
+            top10_test = (joint_data
+                .sort_values(
+                    by        = [ f"test_acc_mean_{side}", f"best_mean_val_acc_mean_{side}", f"train_acc_mean_{side}", f"test_acc_std_{side}", f"best_mean_val_acc_std_{side}", f"train_acc_std_{side}" ],
+                    ascending = [                   False,                            False,                    False,                   True,                            True,                    True ],
+                )
+                [[ "model", "AUs", "statistic", "type", f"train_display_{side}", f"val_display_{side}", f"test_display_{side}" ]]
+                .head(n=10)
+                .reset_index(drop=True)
+            )
+            cli.print(top10_test)
 
-        right_best_display = (right_best
-            [[ "model", "AUs", "statistic", "type", "display_left", "display_right" ]]
-            .rename(columns=lambda col: col.replace("display", "camera"))
-            .reset_index(drop=True)
-        )
-        cli.print(right_best_display)
+            # ---------------- #
+            cli.section("Top 10 -- Val Single Source")
+            cli.print(f"Sorted by (val mean {side}, test mean {side}, train mean {side}, val std {side}, test std {side}, train std {side}).")
+            cli.blank()
+
+            top10_val = (joint_data
+                .sort_values(
+                    by        = [ f"best_mean_val_acc_mean_{side}", f"test_acc_mean_{side}", f"train_acc_mean_{side}", f"best_mean_val_acc_std_{side}", f"test_acc_std_{side}", f"train_acc_std_{side}" ],
+                    ascending = [                            False,                   False,                    False,                            True,                   True,                    True ],
+                )
+                [[ "model", "AUs", "statistic", "type", f"train_display_{side}", f"val_display_{side}", f"test_display_{side}" ]]
+                .head(n=10)
+                .reset_index(drop=True)
+            )
+            cli.print(top10_val)
 
 
 if __name__ == "__main__":
